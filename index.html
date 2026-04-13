@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agente Trânsito - Sistema</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-card">
+        
+        <div class="app-header">
+            <div class="agente-info">
+                <span class="perfil-icon">👤</span>
+                <div class="info-texto">
+                    <span class="agente-nome">Agente Trânsito</span>
+                    <span class="registro-op">SISTEMA OPERACIONAL</span>
+                </div>
+            </div>
+            <button class="btn-edit">✎ EDIT</button>
+        </div>
+
+        <div class="tab-navegacao">
+            <button class="btn-tab ativa" onclick="abrirAba('tab-viatura')">VIATURA</button>
+            <button class="btn-tab" onclick="abrirAba('tab-ocorrencia')">OCORRÊNCIAS</button>
+            <button class="btn-tab" onclick="abrirAba('tab-relatorio')">RELATÓRIOS</button>
+        </div>
+
+        <div id="tab-content">
+            
+            <div id="tab-viatura" class="tab-painel ativo">
+                
+                <div class="sub-navegacao">
+                    <button class="btn-subtab ativa" onclick="abrirSubTela('sub-km-form', this)">REGISTRAR KM</button>
+                    <button class="btn-subtab" onclick="abrirSubTela('sub-km-historico', this)">HISTÓRICO</button>
+                </div>
+
+                <div id="sub-km-form" class="sub-tela ativa">
+                    <div id="tela-abrir-km">
+                        <form id="formKM">
+                            <div class="campo-grupo">
+                                <label>VIATURA</label>
+                                <select id="km-viatura" onchange="verificarOutro(this, 'km-viatura-outro')" required></select>
+                                <input type="text" id="km-viatura-outro" class="escondido mt-2" placeholder="Digite a viatura manualmente">
+                            </div>
+
+                            <div class="campo-row">
+                                <div class="campo-grupo">
+                                    <label>CONDUTOR</label>
+                                    <select id="km-condutor" onchange="verificarOutro(this, 'km-condutor-outro')" required></select>
+                                    <input type="text" id="km-condutor-outro" class="escondido mt-2" placeholder="Digite o condutor">
+                                </div>
+                                <div class="campo-grupo">
+                                    <label>APOIO (Opcional)</label>
+                                    <select id="km-apoio" onchange="verificarOutro(this, 'km-apoio-outro')"></select>
+                                    <input type="text" id="km-apoio-outro" class="escondido mt-2" placeholder="Digite o apoio">
+                                </div>
+                            </div>
+
+                            <div class="campo-grupo">
+                                <label>DATA</label>
+                                <input type="date" id="km-data" required>
+                            </div>
+
+                            <div class="campo-row">
+                                <div class="campo-grupo">
+                                    <label>KM INICIAL</label>
+                                    <input type="number" id="km-inicial" placeholder="Ex: 15400" required>
+                                </div>
+                                <div class="campo-grupo">
+                                    <label>HORA INICIAL</label>
+                                    <input type="time" id="km-hora-inicial" required>
+                                </div>
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="submit" class="btn-acao btn-primario">ABRIR KM</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="tela-km-aberto" class="escondido">
+                        <div class="status-box">
+                            <h3>🟢 Viatura em Operação</h3>
+                            <p id="info-vtr-ativa"></p>
+                            <p id="info-equipe-ativa"></p>
+                            <p id="info-hora-ativa" style="font-weight: bold; margin-top: 5px;"></p>
+                        </div>
+
+                        <form id="formFecharKM">
+                            <div class="campo-row mt-4">
+                                <div class="campo-grupo">
+                                    <label>KM FINAL</label>
+                                    <input type="number" id="km-final" placeholder="Ex: 15450">
+                                </div>
+                                <div class="campo-grupo">
+                                    <label>HORA FINAL</label>
+                                    <div style="display:flex; gap:5px;">
+                                        <input type="time" id="km-hora-final">
+                                        <button type="button" onclick="setHoraAtual('km-hora-final')" style="padding: 0 10px; border-radius:4px; border:1px solid #ccc;">⏱️</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn-container">
+                                <button type="button" class="btn-acao btn-secundario" onclick="editarKM()">✎ EDITAR DADOS INICIAIS</button>
+                                <button type="submit" class="btn-acao btn-alerta">FECHAR KM</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="sub-km-historico" class="sub-tela">
+                    <div class="caixa-historico">
+                        <p>Nenhum KM fechado ainda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-ocorrencia" class="tab-painel">
+                
+                <div class="sub-navegacao">
+                    <button class="btn-subtab ativa" onclick="abrirSubTela('sub-oc-form', this)">REGISTRAR OCORRÊNCIA</button>
+                    <button class="btn-subtab" onclick="abrirSubTela('sub-oc-historico', this)">HISTÓRICO</button>
+                </div>
+
+                <div id="sub-oc-form" class="sub-tela ativa">
+                    
+                    <div id="tela-oc-form">
+                        <form id="formOcorrencia">
+                            <div class="campo-grupo">
+                                <label>VIATURA</label>
+                                <select id="oc-viatura" onchange="verificarOutro(this, 'oc-viatura-outro')" required></select>
+                                <input type="text" id="oc-viatura-outro" class="escondido mt-2" placeholder="Digite a viatura manualmente">
+                            </div>
+
+                            <div class="campo-row">
+                                <div class="campo-grupo">
+                                    <label>CONDUTOR</label>
+                                    <select id="oc-condutor" onchange="verificarOutro(this, 'oc-condutor-outro')" required></select>
+                                    <input type="text" id="oc-condutor-outro" class="escondido mt-2" placeholder="Digite o condutor">
+                                </div>
+                                <div class="campo-grupo">
+                                    <label>APOIO (Opcional)</label>
+                                    <select id="oc-apoio" onchange="verificarOutro(this, 'oc-apoio-outro')"></select>
+                                    <input type="text" id="oc-apoio-outro" class="escondido mt-2" placeholder="Digite o apoio">
+                                </div>
+                            </div>
+
+                            <div class="campo-grupo">
+                                <label>CÓDIGO DA OCORRÊNCIA</label>
+                                <select id="oc-codigo" onchange="verificarOutro(this, 'oc-codigo-outro')" required></select>
+                                <input type="text" id="oc-codigo-outro" class="escondido mt-2" placeholder="Descreva a ocorrência manualmente">
+                            </div>
+
+                            <div class="campo-row">
+                                <div class="campo-grupo">
+                                    <label>LOCAL (SETOR)</label>
+                                    <select id="oc-local" onchange="verificarOutro(this, 'oc-local-outro')" required></select>
+                                    <input type="text" id="oc-local-outro" class="escondido mt-2" placeholder="Digite o endereço completo manualmente">
+                                </div>
+                                <div class="campo-grupo">
+                                    <label>HORA INICIAL</label>
+                                    <input type="time" id="oc-hora-inicial" required>
+                                </div>
+                            </div>
+
+                            <div class="campo-grupo">
+                                <label>OBSERVAÇÕES</label>
+                                <textarea id="oc-observacoes" rows="3" placeholder="Detalhes adicionais da ocorrência..."></textarea>
+                            </div>
+
+                            <div class="campo-grupo">
+                                <label>ANEXAR FOTO</label>
+                                <input type="file" id="oc-foto" accept="image/*">
+                            </div>
+
+                            <div class="btn-container">
+                                <button type="submit" id="btnEnviarOc" class="btn-acao btn-primario">ABRIR OCORRÊNCIA</button>
+                                <button type="button" id="btnVerAbertas" class="btn-acao btn-secundario escondido" onclick="mostrarOcorrenciasAtivas()">VER OCORRÊNCIAS ABERTAS</button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div id="tela-oc-ativas" class="escondido">
+                        <h3 style="text-align:center; color:#333; margin-bottom:15px;">Ocorrências em Andamento</h3>
+                        
+                        <div id="lista-ocorrencias-ativas">
+                            </div>
+
+                        <div class="btn-container">
+                            <button type="button" class="btn-acao btn-primario" onclick="prepararNovaOcorrencia()">+ REGISTRAR NOVA OCORRÊNCIA</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div id="sub-oc-historico" class="sub-tela">
+                    <div class="caixa-historico">
+                        <p>Nenhuma ocorrência finalizada ainda.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-relatorio" class="tab-painel">
+                
+                <div class="sub-navegacao">
+                    <button class="btn-subtab ativa" onclick="abrirSubTela('sub-rel-form', this)">ABRIR RELATÓRIO</button>
+                    <button class="btn-subtab" onclick="abrirSubTela('sub-rel-historico', this)">HISTÓRICO</button>
+                </div>
+
+                <div id="sub-rel-form" class="sub-tela ativa">
+                    <p>Formulário de relatório entrará aqui...</p>
+                </div>
+
+                <div id="sub-rel-historico" class="sub-tela">
+                    <div class="caixa-historico">
+                        <p>Nenhum relatório emitido.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

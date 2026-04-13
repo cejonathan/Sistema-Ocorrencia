@@ -1,0 +1,65 @@
+:root {
+    --primary-color: #5d48e7; 
+    --primary-color-hover: #4a3ab7;
+    --background-color: #f6f7fb; 
+    --card-background: #ffffff;
+    --text-primary: #333333;
+    --text-secondary: #777777;
+    --border-color: #e2e8f0;
+    --field-background: #fdfdfd;
+    --shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+* { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
+body { background-color: var(--background-color); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px 0; }
+.app-card { background-color: var(--card-background); border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 480px; overflow: hidden; padding-bottom: 20px;}
+
+.app-header { background-color: #fcfcfd; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+.agente-info { display: flex; align-items: center; gap: 12px; }
+.perfil-icon { font-size: 24px; background-color: #f0f2f5; color: var(--text-secondary); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+.info-texto { display: flex; flex-direction: column; }
+.agente-nome { font-weight: 500; color: var(--text-primary); font-size: 16px; }
+.registro-op { font-size: 12px; color: var(--text-secondary); font-weight: 300; }
+.btn-edit { background-color: transparent; color: var(--text-secondary); border: none; font-size: 12px; cursor: pointer; font-weight: 500; }
+
+.tab-navegacao { display: flex; background-color: #f1f3f7; padding: 10px 20px; gap: 10px; }
+.btn-tab { flex: 1; padding: 12px 0; background-color: var(--card-background); color: var(--text-secondary); border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
+.btn-tab:hover { background-color: #fbfbfb; }
+.btn-tab.ativa { background-color: var(--primary-color); color: white; }
+
+.tab-painel { display: none; padding: 25px 20px; }
+.tab-painel.ativo { display: block; }
+
+.sub-navegacao { display: flex; gap: 10px; margin-bottom: 25px; }
+.btn-subtab { flex: 1; padding: 10px; background-color: #e2e8f0; color: #4a5568; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
+.btn-subtab.ativa { background-color: var(--primary-color); color: white; }
+.sub-tela { display: none; }
+.sub-tela.ativa { display: block; }
+
+.caixa-historico { background-color: var(--field-background); border: 1px dashed #ccc; border-radius: 8px; padding: 30px; text-align: center; color: var(--text-secondary); }
+
+.campo-grupo { margin-bottom: 15px; width: 100%; }
+.campo-row { display: flex; gap: 15px; }
+.campo-row .campo-grupo { flex: 1; }
+label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px;}
+
+input[type="text"], input[type="file"], input[type="time"], input[type="number"], input[type="date"], select, textarea {
+    width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--field-background); font-size: 15px; color: var(--text-primary);
+}
+textarea { resize: vertical; }
+
+.btn-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 20px; }
+.btn-acao { width: 100%; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; border: none; transition: 0.2s; }
+.btn-primario { background-color: var(--primary-color); color: white; }
+.btn-primario:hover { background-color: var(--primary-color-hover); }
+.btn-secundario { background-color: #f1f3f7; color: var(--text-primary); }
+.btn-secundario:hover { background-color: #e2e8f0; }
+.btn-alerta { background-color: #dc3545; color: white; }
+
+.escondido { display: none !important; }
+.mt-2 { margin-top: 10px; }
+.mt-4 { margin-top: 20px; }
+
+.status-box { background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px;}
+.status-box h3 { color: #2e7d32; margin-bottom: 10px; font-size: 16px; font-weight: bold;}
+.status-box p { color: #388e3c; font-size: 14px; margin-bottom: 5px; }
