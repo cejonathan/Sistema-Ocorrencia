@@ -11,10 +11,23 @@
 }
 
 * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-body { background-color: var(--background-color); display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; padding: 20px 0; }
-.app-card { background-color: var(--card-background); border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 480px; overflow: hidden; padding-bottom: 20px;}
+body { background-color: var(--background-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
 
-.app-header { background-color: #fcfcfd; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+/* 1. MÁGICA AQUI: O cartão agora tem altura fixa e comporta-se como uma tela de telemóvel */
+.app-card { 
+    background-color: var(--card-background); 
+    border-radius: 12px; 
+    box-shadow: var(--shadow); 
+    width: 100%; 
+    max-width: 480px; 
+    height: 90vh; /* Altura travada em 90% da tela */
+    display: flex; 
+    flex-direction: column; /* Organiza os itens em coluna */
+    overflow: hidden; 
+}
+
+/* O Cabeçalho e as Abas ficam travados no topo */
+.app-header { background-color: #fcfcfd; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-shrink: 0;}
 .agente-info { display: flex; align-items: center; gap: 12px; }
 .perfil-icon { font-size: 24px; background-color: #f0f2f5; color: var(--text-secondary); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
 .info-texto { display: flex; flex-direction: column; }
@@ -22,24 +35,19 @@ body { background-color: var(--background-color); display: flex; justify-content
 .registro-op { font-size: 12px; color: var(--text-secondary); font-weight: 300; }
 .btn-edit { background-color: transparent; color: var(--text-secondary); border: none; font-size: 12px; cursor: pointer; font-weight: 500; }
 
-.tab-navegacao { display: flex; background-color: #f1f3f7; padding: 10px 20px; gap: 10px; }
+.tab-navegacao { display: flex; background-color: #f1f3f7; padding: 10px 20px; gap: 10px; flex-shrink: 0;}
 .btn-tab { flex: 1; padding: 12px 0; background-color: var(--card-background); color: var(--text-secondary); border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
 .btn-tab:hover { background-color: #fbfbfb; }
 .btn-tab.ativa { background-color: var(--primary-color); color: white; }
 
-/* ===================================================
-CORREÇÃO DA TELA PULANDO 
-Isso trava a altura mínima do painel no celular
-===================================================
-*/
+/* 2. MÁGICA AQUI: A área de conteúdo ocupa o resto do espaço e gera a barra de rolagem interna */
 #tab-content {
-    min-height: 70vh; 
-    display: flex;
-    flex-direction: column;
+    flex: 1; /* Preenche todo o espaço vazio abaixo das abas */
+    overflow-y: auto; /* O formulário rola apenas aqui dentro! */
 }
 
 .tab-painel { display: none; padding: 25px 20px; }
-.tab-painel.ativo { display: block; flex: 1; }
+.tab-painel.ativo { display: block; }
 
 .sub-navegacao { display: flex; gap: 10px; margin-bottom: 25px; }
 .btn-subtab { flex: 1; padding: 10px; background-color: #e2e8f0; color: #4a5568; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
