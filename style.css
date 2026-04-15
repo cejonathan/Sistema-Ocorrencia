@@ -27,8 +27,19 @@ body { background-color: var(--background-color); display: flex; justify-content
 .btn-tab:hover { background-color: #fbfbfb; }
 .btn-tab.ativa { background-color: var(--primary-color); color: white; }
 
+/* ===================================================
+CORREÇÃO DA TELA PULANDO 
+Isso trava a altura mínima do painel no celular
+===================================================
+*/
+#tab-content {
+    min-height: 70vh; 
+    display: flex;
+    flex-direction: column;
+}
+
 .tab-painel { display: none; padding: 25px 20px; }
-.tab-painel.ativo { display: block; }
+.tab-painel.ativo { display: block; flex: 1; }
 
 .sub-navegacao { display: flex; gap: 10px; margin-bottom: 25px; }
 .btn-subtab { flex: 1; padding: 10px; background-color: #e2e8f0; color: #4a5568; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; transition: 0.2s; }
