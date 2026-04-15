@@ -8,10 +8,9 @@
     
     <style>
         :root {
-            /* Gradiente extraído da sua imagem */
             --gradiente-menu: linear-gradient(135deg, #5d48e7 0%, #4a3ab7 100%);
-            /* Gradiente mais claro para os painéis de status (azul céu moderno) */
-            --gradiente-status: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            /* Novo Gradiente Dark para os Painéis de Status */
+            --gradiente-dark: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
             
             --background-color: #f6f7fb; 
             --card-background: #ffffff;
@@ -23,74 +22,59 @@
         }
 
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-
-        body { 
-            background-color: var(--background-color); 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            min-height: 100vh; 
-            padding: 15px; 
-        }
+        body { background-color: var(--background-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 15px; }
 
         .app-card { 
-            background-color: var(--card-background); 
-            border-radius: 12px; 
-            box-shadow: var(--shadow); 
-            width: 100%; 
-            max-width: 480px; 
-            height: 85vh; 
-            min-height: 600px; 
-            max-height: 850px; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
+            background-color: var(--card-background); border-radius: 12px; box-shadow: var(--shadow); 
+            width: 100%; max-width: 480px; height: 85vh; min-height: 600px; max-height: 850px; 
+            display: flex; flex-direction: column; overflow: hidden; 
         }
 
         .app-header { background-color: #fcfcfd; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-shrink: 0;}
-        .agente-info { display: flex; align-items: center; gap: 12px; }
-        .perfil-icon { font-size: 24px; background-color: #f0f2f5; color: var(--text-secondary); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .tab-navegacao { display: flex; background-color: #f1f3f7; padding: 10px 20px; gap: 10px; flex-shrink: 0;}
         
-        /* Botões de Menu com o seu Gradiente */
-        .btn-tab { flex: 1; padding: 12px 0; background: #f1f3f7; color: var(--text-secondary); border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; transition: 0.3s; }
+        .btn-tab { flex: 1; padding: 12px 0; background: #f1f3f7; color: var(--text-secondary); border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; }
         .btn-tab.ativa { background: var(--gradiente-menu); color: white; box-shadow: 0 4px 10px rgba(93, 72, 231, 0.3); }
 
-        .sub-navegacao { display: flex; gap: 10px; margin-bottom: 25px; }
+        .sub-navegacao { display: flex; gap: 10px; margin-bottom: 20px; }
         .btn-subtab { flex: 1; padding: 10px; background-color: #e2e8f0; color: #4a5568; border: none; border-radius: 6px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .btn-subtab.ativa { background: var(--gradiente-menu); color: white; }
 
-        #tab-content { flex: 1 1 auto; overflow-y: auto; background-color: var(--card-background); }
-        .tab-painel { display: none; padding: 25px 20px; }
+        #tab-content { flex: 1 1 auto; overflow-y: auto; padding: 20px; }
+        .tab-painel { display: none; }
         .tab-painel.ativo { display: block; }
 
-        label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); font-weight: 700; }
-        input, select, textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--field-background); font-size: 15px; }
+        /* ESPAÇAMENTO RESTAURADO ENTRE CAMPOS */
+        .campo-grupo { margin-bottom: 18px; }
+        .campo-row { display: flex; gap: 12px; margin-bottom: 18px; }
+        .campo-row .campo-grupo { flex: 1; margin-bottom: 0; }
 
-        /* PAINEL DE STATUS AZUL CLARO GRADIENTE */
+        label { display: block; margin-bottom: 6px; font-size: 12px; color: var(--text-secondary); font-weight: 700; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--field-background); font-size: 15px; }
+
+        /* PAINEL STATUS DARK GRADIENTE */
         .status-box { 
-            background: var(--gradiente-status); 
-            border: none; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; color: white; 
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.3);
+            background: var(--gradiente-dark); 
+            border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; color: white; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        .status-box h3 { color: #ffffff; margin-bottom: 10px; font-size: 18px; font-weight: 700; }
-        .status-box p { color: #ffffff; font-size: 14px; font-weight: 500; }
+        .status-box h3 { color: #ffffff; margin-bottom: 8px; font-size: 17px; font-weight: 700; }
+        .status-box p { color: rgba(255,255,255,0.8); font-size: 14px; }
 
-        .btn-acao { width: 100%; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; transition: 0.2s; }
-        .btn-primario { background: var(--gradiente-menu); color: white; box-shadow: 0 4px 10px rgba(93, 72, 231, 0.2); }
-        .btn-alerta { background: #dc3545; color: white; }
+        .btn-acao { width: 100%; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; }
+        .btn-primario { background: var(--gradiente-menu); color: white; margin-top: 10px; }
+        .btn-alerta { background: #dc3545; color: white; margin-top: 10px; }
         
         .escondido { display: none !important; }
-        .tab-navegacao { display: flex; background-color: #f1f3f7; padding: 10px 20px; gap: 10px; flex-shrink: 0;}
     </style>
 </head>
 <body>
 
-    <div id="tela-login" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #f4f4f9; padding: 20px; width: 100%;">
-        <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); width: 100%; max-width: 400px; text-align: center;">
-            <h2 style="color: #2c3e50; margin-bottom: 25px;">🚔 Sistema Operacional</h2>
+    <div id="tela-login" class="escondido"> <div style="background: white; padding: 30px; border-radius: 12px; box-shadow: var(--shadow); width: 350px; text-align: center;">
+            <h2 style="margin-bottom: 20px;">🚔 Login</h2>
             <form id="formLogin">
-                <input type="email" id="login-email" placeholder="E-mail" required style="margin-bottom: 15px;">
-                <input type="password" id="login-senha" placeholder="Senha" required style="margin-bottom: 20px;">
+                <input type="email" id="login-email" placeholder="E-mail" required style="margin-bottom:10px;">
+                <input type="password" id="login-senha" placeholder="Senha" required style="margin-bottom:20px;">
                 <button type="submit" id="btn-login" class="btn-acao btn-primario">ENTRAR</button>
             </form>
         </div>
@@ -99,14 +83,8 @@
     <div id="app-principal" class="escondido">
         <div class="app-card">
             <div class="app-header">
-                <div class="agente-info">
-                    <span class="perfil-icon">👤</span>
-                    <div class="info-texto">
-                        <span class="agente-nome">Agente Trânsito</span>
-                        <span class="registro-op">SISTEMA OPERACIONAL</span>
-                    </div>
-                </div>
-                <button onclick="fazerLogout()" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:4px; font-size:11px; font-weight:bold;">SAIR</button>
+                <div class="agente-info"><b>Agente Trânsito</b></div>
+                <button onclick="fazerLogout()" style="background:#dc3545; color:white; border:none; padding:5px 10px; border-radius:4px; cursor:pointer;">SAIR</button>
             </div>
 
             <div class="tab-navegacao">
@@ -117,79 +95,63 @@
 
             <div id="tab-content">
                 <div id="tab-viatura" class="tab-painel ativo">
-                    <div class="sub-navegacao">
-                        <button class="btn-subtab ativa" onclick="abrirSubTela('sub-km-form', this)">REGISTRAR KM</button>
-                        <button class="btn-subtab" onclick="abrirSubTela('sub-km-historico', this)">HISTÓRICO</button>
-                    </div>
-                    <div id="sub-km-form" class="sub-tela ativa">
-                        <div id="tela-abrir-km">
-                            <form id="formKM">
-                                <div class="campo-grupo"><label>VIATURA</label><select id="km-viatura" required></select></div>
-                                <div class="campo-row">
-                                    <div class="campo-grupo"><label>CONDUTOR</label><select id="km-condutor" required></select></div>
-                                    <div class="campo-grupo"><label>APOIO</label><select id="km-apoio"></select></div>
-                                </div>
-                                <div class="campo-row">
-                                    <div class="campo-grupo"><label>KM INICIAL</label><input type="number" id="km-inicial" required></div>
-                                    <div class="campo-grupo"><label>HORA INICIAL</label><input type="time" id="km-hora-inicial" required></div>
-                                </div>
-                                <button type="submit" class="btn-acao btn-primario">ABRIR KM</button>
-                            </form>
-                        </div>
-                        <div id="tela-km-aberto" class="escondido">
-                            <div class="status-box">
-                                <h3>🔵 Viatura em Operação</h3>
-                                <p id="info-vtr-ativa"></p>
-                                <p id="info-equipe-ativa"></p>
-                                <p id="info-hora-ativa"></p>
+                    <div id="tela-abrir-km">
+                        <form id="formKM">
+                            <div class="campo-grupo"><label>VIATURA</label><select id="km-viatura"></select></div>
+                            <div class="campo-row">
+                                <div class="campo-grupo"><label>CONDUTOR</label><select id="km-condutor"></select></div>
+                                <div class="campo-grupo"><label>APOIO</label><select id="km-apoio"></select></div>
                             </div>
-                            <form id="formFecharKM">
-                                <div class="campo-row">
-                                    <div class="campo-grupo"><label>KM FINAL</label><input type="number" id="km-final" required></div>
-                                    <div class="campo-grupo"><label>HORA FINAL</label><input type="time" id="km-hora-final" required></div>
-                                </div>
-                                <button type="submit" class="btn-acao btn-alerta">FECHAR KM</button>
-                            </form>
+                            <div class="campo-row">
+                                <div class="campo-grupo"><label>KM INICIAL</label><input type="number" id="km-inicial"></div>
+                                <div class="campo-grupo"><label>HORA INICIAL</label><input type="time" id="km-hora-inicial"></div>
+                            </div>
+                            <button type="submit" class="btn-acao btn-primario">ABRIR KM</button>
+                        </form>
+                    </div>
+                    <div id="tela-km-aberto" class="escondido">
+                        <div class="status-box">
+                            <h3>🚔 Viatura em Operação</h3>
+                            <p id="info-vtr-ativa"></p>
+                            <p id="info-equipe-ativa"></p>
+                            <p id="info-hora-ativa"></p>
                         </div>
+                        <form id="formFecharKM">
+                            <div class="campo-row">
+                                <div class="campo-grupo"><label>KM FINAL</label><input type="number" id="km-final"></div>
+                                <div class="campo-grupo"><label>HORA FINAL</label><input type="time" id="km-hora-final"></div>
+                            </div>
+                            <button type="submit" class="btn-acao btn-alerta">FECHAR KM</button>
+                        </form>
                     </div>
                 </div>
 
                 <div id="tab-ocorrencia" class="tab-painel">
-                    <div class="sub-navegacao">
-                        <button class="btn-subtab ativa" onclick="abrirSubTela('sub-oc-form', this)">REGISTRAR OCORRÊNCIA</button>
-                        <button class="btn-subtab" onclick="abrirSubTela('sub-oc-historico', this)">HISTÓRICO</button>
+                    <div id="tela-oc-form">
+                        <form id="formOcorrencia">
+                            <div class="campo-grupo"><label>VIATURA</label><select id="oc-viatura"></select></div>
+                            <div class="campo-row">
+                                <div class="campo-grupo"><label>CONDUTOR</label><select id="oc-condutor"></select></div>
+                                <div class="campo-grupo"><label>APOIO</label><select id="oc-apoio"></select></div>
+                            </div>
+                            <div class="campo-grupo"><label>CÓDIGO DA OCORRÊNCIA</label><select id="oc-codigo"></select></div>
+                            <div class="campo-row">
+                                <div class="campo-grupo"><label>LOCAL</label><select id="oc-local"></select></div>
+                                <div class="campo-grupo"><label>HORA INICIAL</label><input type="time" id="oc-hora-inicial"></div>
+                            </div>
+                            <button type="submit" class="btn-acao btn-primario">ABRIR OCORRÊNCIA</button>
+                        </form>
                     </div>
-                    <div id="sub-oc-form" class="sub-tela ativa">
-                        <div id="tela-oc-form">
-                            <form id="formOcorrencia">
-                                <div class="campo-grupo"><label>VIATURA</label><select id="oc-viatura" required></select></div>
-                                <div class="campo-row">
-                                    <div class="campo-grupo"><label>CONDUTOR</label><select id="oc-condutor" required></select></div>
-                                    <div class="campo-grupo"><label>APOIO</label><select id="oc-apoio"></select></div>
-                                </div>
-                                <div class="campo-grupo"><label>CÓDIGO DA OCORRÊNCIA</label><select id="oc-codigo" required></select></div>
-                                <div class="campo-row">
-                                    <div class="campo-grupo"><label>LOCAL</label><select id="oc-local" required></select></div>
-                                    <div class="campo-grupo"><label>HORA INICIAL</label><input type="time" id="oc-hora-inicial" required></div>
-                                </div>
-                                <button type="submit" id="btnEnviarOc" class="btn-acao btn-primario">ABRIR OCORRÊNCIA</button>
-                                <button type="button" id="btnVerAbertas" class="btn-acao btn-secundario escondido mt-2" onclick="mostrarOcorrenciasAtivas()">VER OCORRÊNCIAS EM ANDAMENTO</button>
-                            </form>
-                        </div>
-                        <div id="tela-oc-ativas" class="escondido">
-                            <div id="lista-ocorrencias-ativas"></div>
-                            <button type="button" class="btn-acao btn-primario mt-2" onclick="prepararNovaOcorrencia()">+ REGISTRAR NOVA OCORRÊNCIA</button>
-                        </div>
+                    <div id="tela-oc-ativas" class="escondido">
+                        <div id="lista-ocorrencias-ativas"></div>
+                        <button type="button" class="btn-acao btn-primario" onclick="prepararNovaOcorrencia()">+ REGISTRAR NOVA OCORRÊNCIA</button>
                     </div>
                 </div>
 
                 <div id="tab-relatorio" class="tab-painel">
-                    <div class="sub-navegacao">
-                        <button class="btn-subtab ativa" onclick="abrirSubTela('sub-rel-form', this)">ABRIR RELATÓRIO</button>
-                    </div>
                     <form id="formRelatorio">
-                        <div class="campo-grupo"><label>TÍTULO</label><input type="text" id="rel-titulo" required></div>
-                        <div class="campo-grupo"><label>RELATÓRIO</label><textarea id="rel-texto" rows="10" required></textarea></div>
+                        <div class="campo-grupo"><label>TÍTULO</label><input type="text" id="rel-titulo"></div>
+                        <div class="campo-grupo"><label>RELATÓRIO</label><textarea id="rel-texto" rows="10"></textarea></div>
                         <button type="submit" class="btn-acao btn-primario">ENVIAR RELATÓRIO</button>
                     </form>
                 </div>
