@@ -30,29 +30,26 @@
             padding: 15px; 
         }
 
-        /* Mantém o App centralizado quando fizer o Login */
         #app-principal:not(.escondido) {
             display: flex;
             width: 100%;
             justify-content: center;
         }
 
-        /* 1. A FORTALEZA: Altura sempre fixa! */
         .app-card { 
             background-color: var(--card-background); 
             border-radius: 12px; 
             box-shadow: var(--shadow); 
             width: 100%; 
             max-width: 480px; 
-            height: 85vh; /* Ocupa exatamente 85% da tela do aparelho */
-            min-height: 600px; /* Nunca fica espremido demais */
-            max-height: 850px; /* Nunca fica esticado demais */
+            height: 85vh; 
+            min-height: 600px; 
+            max-height: 850px; 
             display: flex; 
             flex-direction: column; 
             overflow: hidden; 
         }
 
-        /* 2. Cabeçalho e Abas não podem encolher (flex-shrink: 0) */
         .app-header { background-color: #fcfcfd; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-shrink: 0;}
         .agente-info { display: flex; align-items: center; gap: 12px; }
         .perfil-icon { font-size: 24px; background-color: #f0f2f5; color: var(--text-secondary); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
@@ -66,10 +63,9 @@
         .btn-tab:hover { background-color: #fbfbfb; }
         .btn-tab.ativa { background-color: var(--primary-color); color: white; }
 
-        /* 3. BARRA DE ROLAGEM ACONTECE AQUI DENTRO */
         #tab-content {
-            flex: 1 1 auto; /* Preenche o resto do espaço interno */
-            overflow-y: auto; /* A rolagem fica confinada aqui */
+            flex: 1 1 auto; 
+            overflow-y: auto; 
             background-color: var(--card-background);
         }
 
@@ -82,7 +78,7 @@
         .sub-tela { display: none; }
         .sub-tela.ativa { display: block; }
 
-        .caixa-historico { background-color: var(--field-background); border: 1px dashed #ccc; border-radius: 8px; padding: 30px; text-align: center; color: var(--text-secondary); }
+        .caixa-historico { background-color: var(--field-background); border: 1px dashed #ccc; border-radius: 8px; padding: 20px; text-align: center; color: var(--text-secondary); }
 
         .campo-grupo { margin-bottom: 15px; width: 100%; }
         .campo-row { display: flex; gap: 15px; }
@@ -92,6 +88,12 @@
         input[type="text"], input[type="file"], input[type="time"], input[type="number"], input[type="date"], select, textarea {
             width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--field-background); font-size: 15px; color: var(--text-primary);
         }
+        
+        /* Estilo da barra de pesquisa rápida */
+        .busca-container { display: flex; gap: 5px; margin-bottom: 15px; }
+        .busca-container input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
+        .btn-busca { width: auto !important; padding: 10px 15px !important; margin-top: 0 !important; }
+
         textarea { resize: vertical; }
 
         .btn-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 20px; }
@@ -167,7 +169,6 @@
                                     <select id="km-viatura" onchange="verificarOutro(this, 'km-viatura-outro')" required></select>
                                     <input type="text" id="km-viatura-outro" class="escondido mt-2" placeholder="Digite a viatura manualmente">
                                 </div>
-
                                 <div class="campo-row">
                                     <div class="campo-grupo">
                                         <label>CONDUTOR</label>
@@ -180,12 +181,10 @@
                                         <input type="text" id="km-apoio-outro" class="escondido mt-2" placeholder="Digite o apoio">
                                     </div>
                                 </div>
-
                                 <div class="campo-grupo">
                                     <label>DATA</label>
                                     <input type="date" id="km-data" required>
                                 </div>
-
                                 <div class="campo-row">
                                     <div class="campo-grupo">
                                         <label>KM INICIAL</label>
@@ -196,13 +195,11 @@
                                         <input type="time" id="km-hora-inicial" required>
                                     </div>
                                 </div>
-
                                 <div class="btn-container">
                                     <button type="submit" class="btn-acao btn-primario">ABRIR KM</button>
                                 </div>
                             </form>
                         </div>
-
                         <div id="tela-km-aberto" class="escondido">
                             <div class="status-box">
                                 <h3>🟢 Viatura em Operação</h3>
@@ -210,7 +207,6 @@
                                 <p id="info-equipe-ativa"></p>
                                 <p id="info-hora-ativa" style="font-weight: bold; margin-top: 5px;"></p>
                             </div>
-
                             <form id="formFecharKM">
                                 <div class="campo-row mt-4">
                                     <div class="campo-grupo">
@@ -234,8 +230,12 @@
                     </div>
 
                     <div id="sub-km-historico" class="sub-tela">
+                        <div class="busca-container">
+                            <input type="text" id="busca-km" placeholder="Buscar VTR ou Condutor...">
+                            <button class="btn-acao btn-primario btn-busca" onclick="carregarHistoricoKM(document.getElementById('busca-km').value)">🔎</button>
+                        </div>
                         <div class="caixa-historico">
-                            <p>Nenhum KM fechado ainda.</p>
+                            <p>Carregando histórico...</p>
                         </div>
                     </div>
                 </div>
@@ -245,7 +245,6 @@
                         <button class="btn-subtab ativa" onclick="abrirSubTela('sub-oc-form', this)">REGISTRAR OCORRÊNCIA</button>
                         <button class="btn-subtab" onclick="abrirSubTela('sub-oc-historico', this)">HISTÓRICO</button>
                     </div>
-
                     <div id="sub-oc-form" class="sub-tela ativa">
                         <div id="tela-oc-form">
                             <form id="formOcorrencia">
@@ -254,7 +253,6 @@
                                     <select id="oc-viatura" onchange="verificarOutro(this, 'oc-viatura-outro')" required></select>
                                     <input type="text" id="oc-viatura-outro" class="escondido mt-2" placeholder="Digite a viatura manualmente">
                                 </div>
-
                                 <div class="campo-row">
                                     <div class="campo-grupo">
                                         <label>CONDUTOR</label>
@@ -267,13 +265,11 @@
                                         <input type="text" id="oc-apoio-outro" class="escondido mt-2" placeholder="Digite o apoio">
                                     </div>
                                 </div>
-
                                 <div class="campo-grupo">
                                     <label>CÓDIGO DA OCORRÊNCIA</label>
                                     <select id="oc-codigo" onchange="verificarOutro(this, 'oc-codigo-outro')" required></select>
                                     <input type="text" id="oc-codigo-outro" class="escondido mt-2" placeholder="Descreva a ocorrência manualmente">
                                 </div>
-
                                 <div class="campo-row">
                                     <div class="campo-grupo">
                                         <label>LOCAL (SETOR)</label>
@@ -285,24 +281,20 @@
                                         <input type="time" id="oc-hora-inicial" required>
                                     </div>
                                 </div>
-
                                 <div class="campo-grupo">
                                     <label>OBSERVAÇÕES</label>
                                     <textarea id="oc-observacoes" rows="3" placeholder="Detalhes adicionais da ocorrência..."></textarea>
                                 </div>
-
                                 <div class="campo-grupo">
                                     <label>ANEXAR FOTO (Timemark)</label>
-                                    <input type="file" id="oc-foto" accept="image/*" style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; background: white;">
+                                    <input type="file" id="oc-foto" accept="image/*" style="background: white;">
                                 </div>
-
                                 <div class="btn-container">
                                     <button type="submit" id="btnEnviarOc" class="btn-acao btn-primario">ABRIR OCORRÊNCIA</button>
                                     <button type="button" id="btnVerAbertas" class="btn-acao btn-secundario escondido" onclick="mostrarOcorrenciasAtivas()">VER OCORRÊNCIAS ABERTAS</button>
                                 </div>
                             </form>
                         </div>
-
                         <div id="tela-oc-ativas" class="escondido">
                             <h3 style="text-align:center; color:#333; margin-bottom:15px;">Ocorrências em Andamento</h3>
                             <div id="lista-ocorrencias-ativas"></div>
@@ -313,8 +305,12 @@
                     </div>
 
                     <div id="sub-oc-historico" class="sub-tela">
+                        <div class="busca-container">
+                            <input type="text" id="busca-oc" placeholder="Buscar código, local ou obs...">
+                            <button class="btn-acao btn-primario btn-busca" onclick="carregarHistoricoOC(document.getElementById('busca-oc').value)">🔎</button>
+                        </div>
                         <div class="caixa-historico">
-                            <p>Nenhuma ocorrência finalizada ainda.</p>
+                            <p>Carregando histórico...</p>
                         </div>
                     </div>
                 </div>
@@ -324,14 +320,29 @@
                         <button class="btn-subtab ativa" onclick="abrirSubTela('sub-rel-form', this)">ABRIR RELATÓRIO</button>
                         <button class="btn-subtab" onclick="abrirSubTela('sub-rel-historico', this)">HISTÓRICO</button>
                     </div>
-
                     <div id="sub-rel-form" class="sub-tela ativa">
-                        <p>Formulário de relatório entrará aqui...</p>
+                        <form id="formRelatorio">
+                            <div class="campo-grupo">
+                                <label>TÍTULO DO RELATÓRIO</label>
+                                <input type="text" id="rel-titulo" placeholder="Ex: Relatório de Plantão Noturno" required>
+                            </div>
+                            <div class="campo-grupo">
+                                <label>DESCRIÇÃO DETALHADA</label>
+                                <textarea id="rel-texto" rows="10" placeholder="Escreva aqui o relatório completo..." required></textarea>
+                            </div>
+                            <div class="btn-container">
+                                <button type="submit" class="btn-acao btn-primario">ENVIAR RELATÓRIO</button>
+                            </div>
+                        </form>
                     </div>
 
                     <div id="sub-rel-historico" class="sub-tela">
+                        <div class="busca-container">
+                            <input type="text" id="busca-rel" placeholder="Buscar por título ou conteúdo...">
+                            <button class="btn-acao btn-primario btn-busca" onclick="carregarHistoricoRel(document.getElementById('busca-rel').value)">🔎</button>
+                        </div>
                         <div class="caixa-historico">
-                            <p>Nenhum relatório emitido.</p>
+                            <p>Carregando histórico...</p>
                         </div>
                     </div>
                 </div>
