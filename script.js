@@ -4,7 +4,6 @@
 const SUPABASE_URL = "https://fezxlibfvautquxyarhm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_e6F8ATGWLAemomRwmxoHGQ_B9REdJoi";
 
-// Função para pegar o "crachá" do agente logado
 function getHeaders() {
     const token = localStorage.getItem('supabase_token');
     return {
@@ -26,9 +25,8 @@ let statusOperacao = JSON.parse(localStorage.getItem('statusVtr')) || { kmAberto
 let ocorrenciasAbertas = JSON.parse(localStorage.getItem('ocsAtivas')) || [];
 
 // ==========================================
-// 3. INICIALIZAÇÃO, LOGIN E UTILITÁRIOS
+// 3. INICIALIZAÇÃO E UTILITÁRIOS
 // ==========================================
-
 function popularSelect(idElemento, arrayDados) {
     const select = document.getElementById(idElemento);
     if (!select) return;
@@ -44,11 +42,8 @@ function setHoraAtual(idInput) {
 }
 
 window.onload = function() {
-    // Verifica se já está logado
     const tokenSalvo = localStorage.getItem('supabase_token');
-    if (tokenSalvo) {
-        liberarAplicativo();
-    }
+    if (tokenSalvo) liberarAplicativo();
 
     popularSelect('km-viatura', listaViaturas);
     popularSelect('km-condutor', listaAgentes);
@@ -71,14 +66,15 @@ window.onload = function() {
     }
 };
 
-// Evento de Login
+// ==========================================
+// 4. LOGIN E RENOVAÇÃO
+// ==========================================
 const formLogin = document.getElementById('formLogin');
 if(formLogin) {
     formLogin.addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = document.getElementById('btn-login');
         btn.innerText = "Aguarde..."; btn.disabled = true;
-
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-senha').value;
 
@@ -88,34 +84,44 @@ if(formLogin) {
                 headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
             });
-
             const data = await res.json();
-
             if (data.access_token) {
-                // Salva o crachá principal e a chave de renovação
                 localStorage.setItem('supabase_token', data.access_token);
                 localStorage.setItem('supabase_refresh_token', data.refresh_token);
                 liberarAplicativo();
             } else {
                 alert("Erro: " + (data.error_description || "E-mail ou senha incorretos."));
             }
-        } catch(err) {
-            alert("Erro de conexão ao tentar fazer login.");
-        }
+        } catch(err) { alert("Erro de conexão."); }
         btn.innerText = "ENTRAR"; btn.disabled = false;
     });
 }
 
+async function renovarSessaoAtiva() {
+    const refreshToken = localStorage.getItem('supabase_refresh_token');
+    if (!refreshToken) return;
+    try {
+        const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+            method: 'POST',
+            headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: refreshToken })
+        });
+        const data = await res.json();
+        if (data.access_token) {
+            localStorage.setItem('supabase_token', data.access_token);
+            localStorage.setItem('supabase_refresh_token', data.refresh_token);
+        } else { fazerLogout(); }
+    } catch(err) { console.error("Erro renovação"); }
+}
+
+if (localStorage.getItem('supabase_token')) {
+    renovarSessaoAtiva();
+    setInterval(renovarSessaoAtiva, 45 * 60 * 1000);
+}
+
 function liberarAplicativo() {
-    // Esconde a tela de login adicionando a classe 'escondido'
-    if(document.getElementById('tela-login')) {
-        document.getElementById('tela-login').classList.add('escondido');
-    }
-    
-    // Mostra o app principal removendo a classe 'escondido'
-    if(document.getElementById('app-principal')) {
-        document.getElementById('app-principal').classList.remove('escondido');
-    }
+    if(document.getElementById('tela-login')) document.getElementById('tela-login').classList.add('escondido');
+    if(document.getElementById('app-principal')) document.getElementById('app-principal').classList.remove('escondido');
 }
 
 function fazerLogout() {
@@ -124,6 +130,9 @@ function fazerLogout() {
     location.reload();
 }
 
+// ==========================================
+// 5. NAVEGAÇÃO E REGRAS DE TELA
+// ==========================================
 function abrirAba(idAba) {
     document.querySelectorAll('.tab-painel').forEach(p => p.classList.remove('ativo'));
     document.querySelectorAll('.btn-tab').forEach(b => b.classList.remove('ativa'));
@@ -144,6 +153,10 @@ function abrirSubTela(idSub, btn) {
     p.querySelectorAll('.btn-subtab').forEach(b => b.classList.remove('ativa'));
     document.getElementById(idSub).classList.add('ativa');
     btn.classList.add('ativa');
+
+    if (idSub === 'sub-km-historico') carregarHistoricoKM();
+    if (idSub === 'sub-oc-historico') carregarHistoricoOC();
+    if (idSub === 'sub-rel-historico') carregarHistoricoRel();
 }
 
 function verificarOutro(sel, idOut) {
@@ -156,7 +169,7 @@ function verificarOutro(sel, idOut) {
 }
 
 // ==========================================
-// 4. MOTOR DE COMPRESSÃO DE IMAGENS
+// 6. COMPRESSÃO DE IMAGENS
 // ==========================================
 function comprimirFoto(file) {
     return new Promise((resolve) => {
@@ -173,28 +186,25 @@ function comprimirFoto(file) {
                 canvas.height = img.height * scaleSize;
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                resolve(canvas.toDataURL('image/jpeg', 0.6)); // Reduz para ~200KB mantendo resolução boa para leitura
+                resolve(canvas.toDataURL('image/jpeg', 0.6));
             };
         };
     });
 }
 
 // ==========================================
-// 5. LÓGICA DO KM (VIATURAS)
+// 7. LÓGICA DO KM (VIATURAS)
 // ==========================================
 const formKM = document.getElementById('formKM');
 if (formKM) {
     formKM.addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = e.target.querySelector('button[type="submit"]');
-        btn.innerText = "Sincronizando com Supabase..."; btn.disabled = true;
+        btn.innerText = "Sincronizando..."; btn.disabled = true;
 
-        let v = document.getElementById('km-viatura').value;
-        v = (v === 'Outro') ? document.getElementById('km-viatura-outro').value : v;
-        let c = document.getElementById('km-condutor').value;
-        c = (c === 'Outro') ? document.getElementById('km-condutor-outro').value : c;
-        let a = document.getElementById('km-apoio').value;
-        a = (a === 'Outro') ? document.getElementById('km-apoio-outro').value : (a === 'Selecionar' ? 'Sem apoio' : a);
+        let v = document.getElementById('km-viatura').value === 'Outro' ? document.getElementById('km-viatura-outro').value : document.getElementById('km-viatura').value;
+        let c = document.getElementById('km-condutor').value === 'Outro' ? document.getElementById('km-condutor-outro').value : document.getElementById('km-condutor').value;
+        let a = document.getElementById('km-apoio').value === 'Outro' ? document.getElementById('km-apoio-outro').value : (document.getElementById('km-apoio').value === 'Selecionar' ? 'Sem apoio' : document.getElementById('km-apoio').value);
 
         const payload = {
             data: document.getElementById('km-data').value,
@@ -205,43 +215,25 @@ if (formKM) {
 
         try {
             if (!statusOperacao.idDb) {
-                // Criar Novo
-                const reqHeaders = { ...getHeaders(), 'Prefer': 'return=representation' };
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/viaturas`, {
-                    method: 'POST', headers: reqHeaders, body: JSON.stringify(payload)
+                    method: 'POST', headers: { ...getHeaders(), 'Prefer': 'return=representation' }, body: JSON.stringify(payload)
                 });
                 const dados = await res.json();
                 statusOperacao = { kmAberto: true, idDb: dados[0].id, viatura: v, condutor: c, apoio: a, ...payload };
             } else {
-                // Atualizar Existente
                 await fetch(`${SUPABASE_URL}/rest/v1/viaturas?id=eq.${statusOperacao.idDb}`, {
                     method: 'PATCH', headers: getHeaders(), body: JSON.stringify(payload)
                 });
                 statusOperacao = { ...statusOperacao, viatura: v, condutor: c, apoio: a, ...payload };
             }
-
             localStorage.setItem('statusVtr', JSON.stringify(statusOperacao));
             restaurarTelaKmAberto();
-        } catch (err) {
-            alert("Erro na conexão com o Banco de Dados.");
-        }
-
+        } catch (err) { alert("Erro ao salvar KM."); }
         btn.innerText = "ABRIR KM"; btn.disabled = false;
     });
 }
 
-function editarKM() {
-    document.getElementById('tela-km-aberto').classList.add('escondido');
-    document.getElementById('tela-abrir-km').classList.remove('escondido');
-    document.getElementById('km-viatura').value = statusOperacao.viatura;
-    document.getElementById('km-condutor').value = statusOperacao.condutor;
-    document.getElementById('km-apoio').value = statusOperacao.apoio;
-    document.getElementById('km-inicial').value = statusOperacao.km_inicial;
-    document.getElementById('km-hora-inicial').value = statusOperacao.hora_inicial;
-}
-
 function restaurarTelaKmAberto() {
-    if(!document.getElementById('info-vtr-ativa')) return;
     document.getElementById('info-vtr-ativa').innerText = `VTR: ${statusOperacao.viatura}`;
     document.getElementById('info-equipe-ativa').innerText = `Equipe: ${statusOperacao.condutor} / ${statusOperacao.apoio}`;
     document.getElementById('info-hora-ativa').innerText = `Aberto às: ${statusOperacao.hora_inicial}`;
@@ -249,34 +241,33 @@ function restaurarTelaKmAberto() {
     document.getElementById('tela-km-aberto').classList.remove('escondido');
 }
 
+function editarKM() {
+    document.getElementById('tela-km-aberto').classList.add('escondido');
+    document.getElementById('tela-abrir-km').classList.remove('escondido');
+}
+
 const formFecharKM = document.getElementById('formFecharKM');
 if(formFecharKM) {
     formFecharKM.addEventListener('submit', async function(e) {
         e.preventDefault();
         const btn = e.target.querySelector('button[type="submit"]');
-        btn.innerText = "Fechando KM..."; btn.disabled = true;
-
-        const payload = {
-            km_final: document.getElementById('km-final').value,
-            hora_final: document.getElementById('km-hora-final').value
-        };
-
+        btn.innerText = "Fechando..."; btn.disabled = true;
         try {
             await fetch(`${SUPABASE_URL}/rest/v1/viaturas?id=eq.${statusOperacao.idDb}`, {
-                method: 'PATCH', headers: getHeaders(), body: JSON.stringify(payload)
+                method: 'PATCH', headers: getHeaders(), body: JSON.stringify({
+                    km_final: document.getElementById('km-final').value,
+                    hora_final: document.getElementById('km-hora-final').value
+                })
             });
-            alert("✅ KM Registrado e Finalizado com Sucesso!");
+            alert("KM Finalizado!");
             localStorage.removeItem('statusVtr');
             location.reload();
-        } catch (err) {
-            alert("Erro ao fechar KM.");
-            btn.innerText = "FECHAR KM"; btn.disabled = false;
-        }
+        } catch (err) { alert("Erro ao fechar."); }
     });
 }
 
 // ==========================================
-// 6. LÓGICA DAS OCORRÊNCIAS
+// 8. LÓGICA DAS OCORRÊNCIAS
 // ==========================================
 const formOc = document.getElementById('formOcorrencia');
 if(formOc) {
@@ -285,16 +276,11 @@ if(formOc) {
         const btn = document.getElementById('btnEnviarOc');
         btn.innerText = "Processando..."; btn.disabled = true;
 
-        let v = document.getElementById('oc-viatura').value;
-        v = (v === 'Outro') ? document.getElementById('oc-viatura-outro').value : v;
-        let c = document.getElementById('oc-condutor').value;
-        c = (c === 'Outro') ? document.getElementById('oc-condutor-outro').value : c;
-        let a = document.getElementById('oc-apoio').value;
-        a = (a === 'Outro') ? document.getElementById('oc-apoio-outro').value : (a === 'Selecionar' ? 'Sem apoio' : a);
-        let co = document.getElementById('oc-codigo').value;
-        co = (co === 'Outros') ? document.getElementById('oc-codigo-outro').value : co;
-        let l = document.getElementById('oc-local').value;
-        l = (l === 'Outros') ? document.getElementById('oc-local-outro').value : l;
+        let v = document.getElementById('oc-viatura').value === 'Outro' ? document.getElementById('oc-viatura-outro').value : document.getElementById('oc-viatura').value;
+        let c = document.getElementById('oc-condutor').value === 'Outro' ? document.getElementById('oc-condutor-outro').value : document.getElementById('oc-condutor').value;
+        let a = document.getElementById('oc-apoio').value === 'Outro' ? document.getElementById('oc-apoio-outro').value : (document.getElementById('oc-apoio').value === 'Selecionar' ? 'Sem apoio' : document.getElementById('oc-apoio').value);
+        let co = document.getElementById('oc-codigo').value === 'Outros' ? document.getElementById('oc-codigo-outro').value : document.getElementById('oc-codigo').value;
+        let l = document.getElementById('oc-local').value === 'Outros' ? document.getElementById('oc-local-outro').value : document.getElementById('oc-local').value;
 
         const novaOc = {
             data: document.getElementById('km-data').value,
@@ -304,17 +290,13 @@ if(formOc) {
             fotoBase64: null
         };
 
-        const f = document.getElementById('oc-foto');
-        if (f.files.length > 0) {
-            novaOc.fotoBase64 = await comprimirFoto(f.files[0]); // Comprime a foto Timemark
+        if (document.getElementById('oc-foto').files.length > 0) {
+            novaOc.fotoBase64 = await comprimirFoto(document.getElementById('oc-foto').files[0]);
         }
-
         ocorrenciasAbertas.push(novaOc);
         localStorage.setItem('ocsAtivas', JSON.stringify(ocorrenciasAbertas));
-        
         document.getElementById('btnVerAbertas').classList.remove('escondido');
         mostrarOcorrenciasAtivas();
-        
         btn.innerText = "ABRIR OCORRÊNCIA"; btn.disabled = false;
     });
 }
@@ -323,130 +305,137 @@ function mostrarOcorrenciasAtivas() {
     document.getElementById('tela-oc-form').classList.add('escondido');
     document.getElementById('tela-oc-ativas').classList.remove('escondido');
     const container = document.getElementById('lista-ocorrencias-ativas');
-    container.innerHTML = ''; 
-    
-    ocorrenciasAbertas.forEach((oc, i) => {
-        container.innerHTML += `
-            <div class="status-box">
-                <h3 style="color:#d9534f;">🚨 Cód: ${oc.codigo}</h3>
-                <p><strong>Local:</strong> ${oc.local}</p>
-                <div class="campo-grupo mt-4" style="text-align:left;">
-                    <label>HORA FINAL</label>
-                    <div style="display:flex; gap:5px;">
-                        <input type="time" id="oc-hora-final-${i}" style="background:white;">
-                        <button type="button" onclick="setHoraAtual('oc-hora-final-${i}')" style="padding: 10px; border-radius:4px; border:1px solid #ccc;">⏱️</button>
-                    </div>
+    container.innerHTML = ocorrenciasAbertas.map((oc, i) => `
+        <div class="status-box" style="background:#fff3cd; border-left:5px solid #ffc107; text-align:left;">
+            <h3 style="color:#856404;">🚨 ${oc.codigo}</h3>
+            <p>📍 ${oc.local}</p>
+            <div class="campo-grupo mt-2">
+                <label>HORA FINAL</label>
+                <div style="display:flex; gap:5px;">
+                    <input type="time" id="oc-hora-final-${i}">
+                    <button type="button" onclick="setHoraAtual('oc-hora-final-${i}')" style="padding:5px;">⏱️</button>
                 </div>
-                <button type="button" class="btn-acao btn-alerta mt-2" id="btn-fechar-oc-${i}" onclick="fecharOcorrencia(${i})">FECHAR E ENVIAR</button>
-            </div>`;
-    });
+            </div>
+            <button class="btn-acao btn-alerta mt-2" onclick="fecharOcorrencia(${i})">FECHAR E ENVIAR</button>
+        </div>
+    `).join('');
+}
+
+async function fecharOcorrencia(i) {
+    const hf = document.getElementById(`oc-hora-final-${i}`).value;
+    if(!hf) return alert("Preencha a hora.");
+    const oc = ocorrenciasAbertas[i];
+    let linkArquivo = "Sem arquivos";
+    try {
+        if (oc.fotoBase64) {
+            const blob = await fetch(oc.fotoBase64).then(r => r.blob());
+            const fileName = `foto_${Date.now()}.jpg`;
+            await fetch(`${SUPABASE_URL}/storage/v1/object/fotos/${fileName}`, {
+                method: 'POST', headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${localStorage.getItem('supabase_token')}`, 'Content-Type': 'image/jpeg' }, body: blob
+            });
+            linkArquivo = `${SUPABASE_URL}/storage/v1/object/public/fotos/${fileName}`;
+        }
+        await fetch(`${SUPABASE_URL}/rest/v1/ocorrencias`, {
+            method: 'POST', headers: getHeaders(), body: JSON.stringify({
+                data: oc.data, viatura: oc.viatura, condutor: oc.condutor, apoio: oc.apoio,
+                codigo: oc.codigo, local: oc.local, hora_inicial: oc.horaInicial, 
+                hora_final: hf, observacao: oc.observacao, arquivos: linkArquivo
+            })
+        });
+        ocorrenciasAbertas.splice(i, 1);
+        localStorage.setItem('ocsAtivas', JSON.stringify(ocorrenciasAbertas));
+        if (ocorrenciasAbertas.length === 0) {
+            document.getElementById('btnVerAbertas').classList.add('escondido');
+            prepararNovaOcorrencia();
+        } else { mostrarOcorrenciasAtivas(); }
+    } catch (err) { alert("Erro ao enviar."); }
 }
 
 function prepararNovaOcorrencia() {
     document.getElementById('tela-oc-ativas').classList.add('escondido');
     document.getElementById('tela-oc-form').classList.remove('escondido');
-    document.getElementById('oc-codigo').value = "Selecionar";
-    document.getElementById('oc-local').value = "Selecionar";
-    document.getElementById('oc-observacoes').value = "";
-    document.getElementById('oc-foto').value = "";
     setHoraAtual('oc-hora-inicial');
 }
 
-async function fecharOcorrencia(i) {
-    const hf = document.getElementById(`oc-hora-final-${i}`).value;
-    if(!hf) return alert("Por favor, preencha a hora final.");
-
-    const btn = document.getElementById(`btn-fechar-oc-${i}`);
-    btn.innerText = "Enviando..."; btn.disabled = true;
-
-    const oc = ocorrenciasAbertas[i];
-    let linkArquivo = "Sem arquivos";
-    const tokenAgente = localStorage.getItem('supabase_token') || SUPABASE_KEY;
-
-    try {
-        // 1. SE TIVER FOTO, ENVIA PARA O STORAGE
-        if (oc.fotoBase64) {
-            const blob = await fetch(oc.fotoBase64).then(r => r.blob());
-            const fileName = `foto_${Date.now()}.jpg`;
-            const urlStorage = `${SUPABASE_URL}/storage/v1/object/fotos/${fileName}`;
-
-            const resFoto = await fetch(urlStorage, {
-                method: 'POST',
-                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${tokenAgente}`, 'Content-Type': 'image/jpeg' },
-                body: blob
+// ==========================================
+// 9. LÓGICA DE RELATÓRIOS
+// ==========================================
+const formRel = document.getElementById('formRelatorio');
+if(formRel) {
+    formRel.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.innerText = "Enviando..."; btn.disabled = true;
+        try {
+            await fetch(`${SUPABASE_URL}/rest/v1/relatorios`, {
+                method: 'POST', headers: getHeaders(), body: JSON.stringify({
+                    data: document.getElementById('km-data').value,
+                    agente: localStorage.getItem('agente_logado') || 'Agente', // Ideal salvar no login
+                    titulo: document.getElementById('rel-titulo').value,
+                    relatorio: document.getElementById('rel-texto').value
+                })
             });
-
-            if (resFoto.ok) {
-                linkArquivo = `${SUPABASE_URL}/storage/v1/object/public/fotos/${fileName}`;
-            }
-        }
-
-        // 2. ENVIA TEXTO E LINK DA FOTO PARA A TABELA (POSTGRESQL)
-        const payload = {
-            data: oc.data, viatura: oc.viatura, condutor: oc.condutor, apoio: oc.apoio,
-            codigo: oc.codigo, local: oc.local, hora_inicial: oc.horaInicial, 
-            hora_final: hf, observacao: oc.observacao, arquivos: linkArquivo
-        };
-
-        const resDb = await fetch(`${SUPABASE_URL}/rest/v1/ocorrencias`, {
-            method: 'POST', headers: getHeaders(), body: JSON.stringify(payload)
-        });
-
-        if (resDb.ok) {
-            alert("✅ Ocorrência salva no Banco de Dados com sucesso!");
-            ocorrenciasAbertas.splice(i, 1);
-            localStorage.setItem('ocsAtivas', JSON.stringify(ocorrenciasAbertas));
-            
-            if (ocorrenciasAbertas.length === 0) {
-                document.getElementById('btnVerAbertas').classList.add('escondido');
-                prepararNovaOcorrencia();
-            } else {
-                mostrarOcorrenciasAtivas();
-            }
-        } else {
-            throw new Error("Falha ao salvar no banco de textos.");
-        }
-    } catch (err) {
-        alert("Erro ao enviar ocorrência. Tente novamente.");
-        btn.innerText = "FECHAR E ENVIAR"; btn.disabled = false;
-    }
+            alert("Relatório enviado!");
+            e.target.reset();
+        } catch (err) { alert("Erro."); }
+        btn.innerText = "ENVIAR RELATÓRIO"; btn.disabled = false;
+    });
 }
 
 // ==========================================
-// 7. MOTOR DE RENOVAÇÃO DE SESSÃO (KEEP ALIVE)
+// 10. SINCRONIZAÇÃO DE HISTÓRICOS (BUSCA)
 // ==========================================
-
-// Função que pede um novo crachá ao Supabase sem pedir senha
-async function renovarSessaoAtiva() {
-    const refreshToken = localStorage.getItem('supabase_refresh_token');
-    if (!refreshToken) return; // Se não tem chave, não faz nada
-
+async function carregarHistoricoKM(termo = "") {
+    const container = document.querySelector('#sub-km-historico .caixa-historico');
+    container.innerHTML = "Buscando...";
     try {
-        const res = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
-            method: 'POST',
-            headers: { 'apikey': SUPABASE_KEY, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ refresh_token: refreshToken })
-        });
-        
-        const data = await res.json();
-
-        if (data.access_token) {
-            // Sucesso! Atualiza as chaves silenciosamente no celular do agente
-            localStorage.setItem('supabase_token', data.access_token);
-            localStorage.setItem('supabase_refresh_token', data.refresh_token);
-            console.log("Sessão renovada com sucesso para mais 1 hora.");
-        } else {
-            // Se a chave for muito velha ou revogada, aí sim ele desloga o agente
-            console.log("Sessão expirada definitivamente.");
-            fazerLogout();
-        }
-    } catch(err) {
-        console.error("Falha silenciosa ao tentar renovar o token.");
-    }
+        let url = `${SUPABASE_URL}/rest/v1/viaturas?order=created_at.desc`;
+        if (termo) url += `&or=(viatura.ilike.*${termo}*,condutor.ilike.*${termo}*)`;
+        else url += `&limit=30`;
+        const res = await fetch(url, { headers: getHeaders() });
+        const dados = await res.json();
+        container.innerHTML = dados.length ? dados.map(item => `
+            <div style="background:#fff; border:1px solid #ddd; padding:10px; border-radius:8px; margin-bottom:10px; text-align:left; font-size:13px;">
+                <b>📅 ${new Date(item.data).toLocaleDateString('pt-BR')} | VTR: ${item.viatura}</b>
+                <p>👤 ${item.condutor} | 🏁 KM: ${item.km_inicial} ⮕ ${item.km_final || '---'}</p>
+            </div>
+        `).join('') : "<p>Nada encontrado.</p>";
+    } catch (err) { container.innerHTML = "Erro."; }
 }
 
-// Aciona o robô se o agente já estiver logado quando abrir o aplicativo
-if (localStorage.getItem('supabase_token')) {
-    renovarSessaoAtiva(); // Renova logo ao abrir (Garante uma hora inteira nova)
-    setInterval(renovarSessaoAtiva, 45 * 60 * 1000); // Roda a cada 45 minutos (2.700.000 ms)
+async function carregarHistoricoOC(termo = "") {
+    const container = document.querySelector('#sub-oc-historico .caixa-historico');
+    container.innerHTML = "Buscando...";
+    try {
+        let url = `${SUPABASE_URL}/rest/v1/ocorrencias?order=created_at.desc`;
+        if (termo) url += `&or=(codigo.ilike.*${termo}*,local.ilike.*${termo}*,observacao.ilike.*${termo}*)`;
+        else url += `&limit=30`;
+        const res = await fetch(url, { headers: getHeaders() });
+        const dados = await res.json();
+        container.innerHTML = dados.length ? dados.map(item => `
+            <div style="background:#fff; border:1px solid #ddd; padding:10px; border-radius:8px; margin-bottom:10px; text-align:left; font-size:13px;">
+                <b style="color:#d32f2f;">🚨 ${item.codigo}</b>
+                <p>📍 ${item.local}</p>
+                ${item.arquivos !== 'Sem arquivos' ? `<a href="${item.arquivos}" target="_blank" style="color:#5d48e7; display:block; margin-top:5px;">🖼️ Ver Foto</a>` : ''}
+            </div>
+        `).join('') : "<p>Nada encontrado.</p>";
+    } catch (err) { container.innerHTML = "Erro."; }
+}
+
+async function carregarHistoricoRel(termo = "") {
+    const container = document.querySelector('#sub-rel-historico .caixa-historico');
+    container.innerHTML = "Buscando...";
+    try {
+        let url = `${SUPABASE_URL}/rest/v1/relatorios?order=created_at.desc`;
+        if (termo) url += `&or=(titulo.ilike.*${termo}*,relatorio.ilike.*${termo}*)`;
+        const res = await fetch(url, { headers: getHeaders() });
+        const dados = await res.json();
+        container.innerHTML = dados.length ? dados.map(item => `
+            <div style="background:#fff; border:1px solid #ddd; padding:10px; border-radius:8px; margin-bottom:10px; text-align:left; font-size:13px;">
+                <b>📄 ${item.titulo}</b>
+                <p style="color:#666;">${item.relatorio.substring(0, 80)}...</p>
+                <div style="font-size:10px; color:#999; margin-top:5px;">${new Date(item.data).toLocaleDateString('pt-BR')}</div>
+            </div>
+        `).join('') : "<p>Nada encontrado.</p>";
+    } catch (err) { container.innerHTML = "Erro."; }
 }
