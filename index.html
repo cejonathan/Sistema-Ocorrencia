@@ -17,6 +17,8 @@
             --border-color: #e2e8f0;
             --field-background: #fdfdfd;
             --shadow: 0 4px 12px rgba(0,0,0,0.1);
+            /* Novo Gradiente Azul Moderno */
+            --gradiente-azul: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
         }
 
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
@@ -85,47 +87,49 @@
         .campo-row .campo-grupo { flex: 1; }
         label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px;}
 
-        input[type="text"], input[type="file"], input[type="time"], input[type="number"], input[type="date"], select, textarea {
+        input, select, textarea {
             width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--field-background); font-size: 15px; color: var(--text-primary);
         }
         
-        /* Estilo da barra de pesquisa rápida */
         .busca-container { display: flex; gap: 5px; margin-bottom: 15px; }
         .busca-container input { flex: 1; padding: 10px; border-radius: 6px; border: 1px solid var(--border-color); }
         .btn-busca { width: auto !important; padding: 10px 15px !important; margin-top: 0 !important; }
-
-        textarea { resize: vertical; }
 
         .btn-container { display: flex; flex-direction: column; align-items: center; gap: 12px; margin-top: 20px; }
         .btn-acao { width: 100%; padding: 16px; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; border: none; transition: 0.2s; }
         .btn-primario { background-color: var(--primary-color); color: white; }
         .btn-primario:hover { background-color: var(--primary-color-hover); }
         .btn-secundario { background-color: #f1f3f7; color: var(--text-primary); }
-        .btn-secundario:hover { background-color: #e2e8f0; }
         .btn-alerta { background-color: #dc3545; color: white; }
+
+        /* PAINEL AZUL GRADIENTE MODERNO */
+        .status-box { 
+            background: var(--gradiente-azul); 
+            border: none;
+            border-radius: 12px; 
+            padding: 20px; 
+            text-align: center; 
+            margin-bottom: 15px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(30, 60, 114, 0.3);
+        }
+        .status-box h3 { color: #ffffff; margin-bottom: 10px; font-size: 18px; font-weight: bold;}
+        .status-box p { color: rgba(255, 255, 255, 0.9); font-size: 14px; margin-bottom: 5px; }
 
         .escondido { display: none !important; }
         .mt-2 { margin-top: 10px; }
         .mt-4 { margin-top: 20px; }
-
-        .status-box { background-color: #e8f5e9; border: 1px solid #c8e6c9; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px;}
-        .status-box h3 { color: #2e7d32; margin-bottom: 10px; font-size: 16px; font-weight: bold;}
-        .status-box p { color: #388e3c; font-size: 14px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
 
     <div id="tela-login" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #f4f4f9; padding: 20px; width: 100%;">
         <div style="background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; text-align: center;">
-            <h2 style="color: #2c3e50; margin-bottom: 25px; font-family: 'Roboto', sans-serif;">🚔 Sistema Operacional</h2>
+            <h2 style="color: #2c3e50; margin-bottom: 25px;">🚔 Sistema Operacional</h2>
             <form id="formLogin">
-                <div style="margin-bottom: 15px;">
-                    <input type="email" id="login-email" placeholder="E-mail (ex: det02@mobilidade.com)" required style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;">
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <input type="password" id="login-senha" placeholder="Senha" required style="width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;">
-                </div>
-                <button type="submit" id="btn-login" style="width: 100%; padding: 14px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 16px;">ENTRAR</button>
+                <input type="email" id="login-email" placeholder="E-mail" required style="margin-bottom: 15px;">
+                <input type="password" id="login-senha" placeholder="Senha" required style="margin-bottom: 20px;">
+                <button type="submit" id="btn-login" style="width: 100%; padding: 14px; background-color: #0d6efd; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">ENTRAR</button>
             </form>
         </div>
     </div>
@@ -142,8 +146,7 @@
                     </div>
                 </div>
                 <div style="display: flex; gap: 10px;">
-                    <button class="btn-edit">✎ EDIT</button>
-                    <button class="btn-edit" onclick="fazerLogout()" style="background-color: #dc3545; color: white; border-color: #dc3545; padding: 4px 8px; border-radius: 4px;">SAIR</button>
+                    <button class="btn-edit" onclick="fazerLogout()" style="background-color: #dc3545; color: white; border-color: #dc3545; padding: 4px 8px; border-radius: 4px; border: none;">SAIR</button>
                 </div>
             </div>
 
@@ -188,7 +191,7 @@
                                 <div class="campo-row">
                                     <div class="campo-grupo">
                                         <label>KM INICIAL</label>
-                                        <input type="number" id="km-inicial" placeholder="Ex: 15400" required>
+                                        <input type="number" id="km-inicial" required>
                                     </div>
                                     <div class="campo-grupo">
                                         <label>HORA INICIAL</label>
@@ -202,7 +205,7 @@
                         </div>
                         <div id="tela-km-aberto" class="escondido">
                             <div class="status-box">
-                                <h3>🟢 Viatura em Operação</h3>
+                                <h3>🔵 Viatura em Operação</h3>
                                 <p id="info-vtr-ativa"></p>
                                 <p id="info-equipe-ativa"></p>
                                 <p id="info-hora-ativa" style="font-weight: bold; margin-top: 5px;"></p>
@@ -211,7 +214,7 @@
                                 <div class="campo-row mt-4">
                                     <div class="campo-grupo">
                                         <label>KM FINAL</label>
-                                        <input type="number" id="km-final" placeholder="Ex: 15450">
+                                        <input type="number" id="km-final" required>
                                     </div>
                                     <div class="campo-grupo">
                                         <label>HORA FINAL</label>
@@ -222,7 +225,7 @@
                                     </div>
                                 </div>
                                 <div class="btn-container">
-                                    <button type="button" class="btn-acao btn-secundario" onclick="editarKM()">✎ EDITAR DADOS INICIAIS</button>
+                                    <button type="button" class="btn-acao btn-secundario" onclick="editarKM()">✎ EDITAR ABERTURA</button>
                                     <button type="submit" class="btn-acao btn-alerta">FECHAR KM</button>
                                 </div>
                             </form>
@@ -250,53 +253,39 @@
                             <form id="formOcorrencia">
                                 <div class="campo-grupo">
                                     <label>VIATURA</label>
-                                    <select id="oc-viatura" onchange="verificarOutro(this, 'oc-viatura-outro')" required></select>
-                                    <input type="text" id="oc-viatura-outro" class="escondido mt-2" placeholder="Digite a viatura manualmente">
+                                    <select id="oc-viatura" required></select>
                                 </div>
                                 <div class="campo-row">
                                     <div class="campo-grupo">
                                         <label>CONDUTOR</label>
-                                        <select id="oc-condutor" onchange="verificarOutro(this, 'oc-condutor-outro')" required></select>
-                                        <input type="text" id="oc-condutor-outro" class="escondido mt-2" placeholder="Digite o condutor">
+                                        <select id="oc-condutor" required></select>
                                     </div>
                                     <div class="campo-grupo">
-                                        <label>APOIO (Opcional)</label>
-                                        <select id="oc-apoio" onchange="verificarOutro(this, 'oc-apoio-outro')"></select>
-                                        <input type="text" id="oc-apoio-outro" class="escondido mt-2" placeholder="Digite o apoio">
+                                        <label>APOIO</label>
+                                        <select id="oc-apoio"></select>
                                     </div>
                                 </div>
                                 <div class="campo-grupo">
                                     <label>CÓDIGO DA OCORRÊNCIA</label>
-                                    <select id="oc-codigo" onchange="verificarOutro(this, 'oc-codigo-outro')" required></select>
-                                    <input type="text" id="oc-codigo-outro" class="escondido mt-2" placeholder="Descreva a ocorrência manualmente">
+                                    <select id="oc-codigo" required></select>
                                 </div>
                                 <div class="campo-row">
                                     <div class="campo-grupo">
                                         <label>LOCAL (SETOR)</label>
-                                        <select id="oc-local" onchange="verificarOutro(this, 'oc-local-outro')" required></select>
-                                        <input type="text" id="oc-local-outro" class="escondido mt-2" placeholder="Digite o endereço completo manualmente">
+                                        <select id="oc-local" required></select>
                                     </div>
                                     <div class="campo-grupo">
                                         <label>HORA INICIAL</label>
                                         <input type="time" id="oc-hora-inicial" required>
                                     </div>
                                 </div>
-                                <div class="campo-grupo">
-                                    <label>OBSERVAÇÕES</label>
-                                    <textarea id="oc-observacoes" rows="3" placeholder="Detalhes adicionais da ocorrência..."></textarea>
-                                </div>
-                                <div class="campo-grupo">
-                                    <label>ANEXAR FOTO (Timemark)</label>
-                                    <input type="file" id="oc-foto" accept="image/*" style="background: white;">
-                                </div>
                                 <div class="btn-container">
                                     <button type="submit" id="btnEnviarOc" class="btn-acao btn-primario">ABRIR OCORRÊNCIA</button>
-                                    <button type="button" id="btnVerAbertas" class="btn-acao btn-secundario escondido" onclick="mostrarOcorrenciasAtivas()">VER OCORRÊNCIAS ABERTAS</button>
+                                    <button type="button" id="btnVerAbertas" class="btn-acao btn-secundario escondido" onclick="mostrarOcorrenciasAtivas()">VER OCORRÊNCIAS EM ANDAMENTO</button>
                                 </div>
                             </form>
                         </div>
                         <div id="tela-oc-ativas" class="escondido">
-                            <h3 style="text-align:center; color:#333; margin-bottom:15px;">Ocorrências em Andamento</h3>
                             <div id="lista-ocorrencias-ativas"></div>
                             <div class="btn-container">
                                 <button type="button" class="btn-acao btn-primario" onclick="prepararNovaOcorrencia()">+ REGISTRAR NOVA OCORRÊNCIA</button>
@@ -324,11 +313,11 @@
                         <form id="formRelatorio">
                             <div class="campo-grupo">
                                 <label>TÍTULO DO RELATÓRIO</label>
-                                <input type="text" id="rel-titulo" placeholder="Ex: Relatório de Plantão Noturno" required>
+                                <input type="text" id="rel-titulo" required>
                             </div>
                             <div class="campo-grupo">
                                 <label>DESCRIÇÃO DETALHADA</label>
-                                <textarea id="rel-texto" rows="10" placeholder="Escreva aqui o relatório completo..." required></textarea>
+                                <textarea id="rel-texto" rows="10" required></textarea>
                             </div>
                             <div class="btn-container">
                                 <button type="submit" class="btn-acao btn-primario">ENVIAR RELATÓRIO</button>
