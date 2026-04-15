@@ -11,22 +11,32 @@
 }
 
 * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
-body { background-color: var(--background-color); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
 
-/* 1. MÁGICA AQUI: O cartão agora tem altura fixa e comporta-se como uma tela de telemóvel */
+/* 1. Alinhamento Centralizado para o cartão não subir nem descer */
+body { 
+    background-color: var(--background-color); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    min-height: 100vh; 
+    padding: 20px; 
+}
+
+/* 2. FORTALEZA DE TAMANHO: Altura fixa em 800px */
 .app-card { 
     background-color: var(--card-background); 
     border-radius: 12px; 
     box-shadow: var(--shadow); 
     width: 100%; 
     max-width: 480px; 
-    height: 90vh; /* Altura travada em 90% da tela */
+    height: 800px; /* Tamanho fixo cravado */
+    max-height: 90vh; /* Se o telemóvel for muito pequeno, ele ajusta-se */
     display: flex; 
-    flex-direction: column; /* Organiza os itens em coluna */
+    flex-direction: column; 
     overflow: hidden; 
 }
 
-/* O Cabeçalho e as Abas ficam travados no topo */
+/* O Cabeçalho e Abas ficam travados com flex-shrink: 0 */
 .app-header { background-color: #fcfcfd; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); flex-shrink: 0;}
 .agente-info { display: flex; align-items: center; gap: 12px; }
 .perfil-icon { font-size: 24px; background-color: #f0f2f5; color: var(--text-secondary); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
@@ -40,10 +50,11 @@ body { background-color: var(--background-color); display: flex; justify-content
 .btn-tab:hover { background-color: #fbfbfb; }
 .btn-tab.ativa { background-color: var(--primary-color); color: white; }
 
-/* 2. MÁGICA AQUI: A área de conteúdo ocupa o resto do espaço e gera a barra de rolagem interna */
+/* 3. A BARRA DE ROLAGEM ACONTECE APENAS AQUI DENTRO */
 #tab-content {
-    flex: 1; /* Preenche todo o espaço vazio abaixo das abas */
-    overflow-y: auto; /* O formulário rola apenas aqui dentro! */
+    flex: 1 1 auto; /* Ocupa todo o espaço restante */
+    overflow-y: auto; /* Cria a barra de rolagem se passar do limite */
+    background-color: var(--card-background);
 }
 
 .tab-painel { display: none; padding: 25px 20px; }
