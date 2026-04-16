@@ -26,16 +26,28 @@
 
         body { 
             background-color: #d1d5db; 
-            display: flex; justify-content: center; align-items: center; 
-            min-height: 100vh; padding: 15px; overflow: hidden; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; /* 1. Mudamos de 'center' para 'flex-start' para subir o card */
+            min-height: 100vh; 
+            padding: 0; /* 2. Removemos o padding de 15px que criava o recuo */
+            overflow: hidden; 
         }
 
         #app-principal:not(.escondido) { display: flex; width: 100%; justify-content: center; }
 
         .app-card { 
-            background-color: var(--background-color); border-radius: 12px; box-shadow: var(--shadow); 
-            width: 100%; max-width: 480px; height: 85vh; min-height: 600px; max-height: 850px; 
-            display: flex; flex-direction: column; overflow: hidden; position: relative;
+            background-color: var(--background-color); 
+            border-radius: 0; /* 3. Tiramos o arredondado para ele encaixar nos cantos da tela */
+            box-shadow: none; /* Opcional: remove a sombra já que ele vai estar colado */
+            width: 100%; 
+            max-width: 480px; 
+            height: 100vh; /* Faz o card ocupar 100% da altura da tela do celular */
+            max-height: none; /* Remove o limite de 850px para não sobrar espaço embaixo */
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+            position: relative;
         }
 
         .app-header { 
