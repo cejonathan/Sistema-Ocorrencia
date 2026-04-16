@@ -154,6 +154,35 @@ function iniciarRenovacaoToken() {
 if (localStorage.getItem('supabase_token')) {
     iniciarRenovacaoToken();
 }
+// Esta função roda automaticamente toda vez que a página termina de carregar
+window.addEventListener('load', () => {
+    const token = localStorage.getItem('supabase_token');
+    
+    // Se o token existe, o usuário já está logado
+    if (token) {
+        // 1. Garante que a tela de login suma e o app apareça
+        const telaLogin = document.getElementById('tela-login');
+        const appPrincipal = document.getElementById('app-principal');
+        
+        if (telaLogin) telaLogin.classList.add('escondido');
+        if (appPrincipal) appPrincipal.classList.remove('escondido');
+
+        // 2. CHAMA OS HISTÓRICOS IMEDIATAMENTE
+        carregarHistoricoKM();
+        carregarHistoricoOC();
+        
+        // 3. Verifica se tem KM aberto no navegador e restaura a tela
+        const statusSalvo = localStorage.getItem('statusVtr');
+        if (statusSalvo) {
+            statusOperacao = JSON.parse(statusSalvo);
+            if (typeof restaurarTelaKmAberto === 'function') restaurarTelaKmAberto();
+        }
+
+        // 4. Aplica a trava de identidade (DET) que discutimos
+        if (typeof aplicarTravaIdentidade === 'function') aplicarTravaIdentidade();
+    }
+});
+
 
 // ==========================================
 // 5. NAVEGAÇÃO WHATSAPP & AUTO-LOAD
