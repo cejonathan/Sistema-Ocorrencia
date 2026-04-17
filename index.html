@@ -8,66 +8,56 @@
     
     <!-- CODIGO CSS -->
 
-    <style>
+<style>
         :root {
             --primary-color: #5d48e7; 
+            --success-color: #25D366; /* Verde WhatsApp para ocorrências ativas */
             --background-color: #e5ddd5; 
             --card-background: #ffffff;
             --text-primary: #333333;
-            --text-secondary: #777777;
+            --text-secondary: #667781;
             --border-color: #e2e8f0;
             --field-background: #fdfdfd;
             --shadow: 0 4px 12px rgba(0,0,0,0.1);
             --gradiente-azul: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-            --msg-sistema: #ffffff;
         }
 
         * { box-sizing: border-box; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; }
 
         body { 
             background-color: #d1d5db; 
-            display: flex; 
-            justify-content: center; 
-            align-items: flex-start; /* 1. Mudamos de 'center' para 'flex-start' para subir o card */
-            min-height: 100vh; 
-            padding: 0; /* 2. Removemos o padding de 15px que criava o recuo */
-            overflow: hidden; 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; padding: 15px; overflow: hidden; 
         }
 
         #app-principal:not(.escondido) { display: flex; width: 100%; justify-content: center; }
 
         .app-card { 
-            background-color: var(--background-color); 
-            border-radius: 0; /* 3. Tiramos o arredondado para ele encaixar nos cantos da tela */
-            box-shadow: none; /* Opcional: remove a sombra já que ele vai estar colado */
-            width: 100%; 
-            max-width: 480px; 
-            height: 100vh; /* Faz o card ocupar 100% da altura da tela do celular */
-            max-height: none; /* Remove o limite de 850px para não sobrar espaço embaixo */
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-            position: relative;
+            background-color: var(--background-color); border-radius: 12px; box-shadow: var(--shadow); 
+            width: 100%; max-width: 480px; height: 85vh; min-height: 600px; max-height: 850px; 
+            display: flex; flex-direction: column; overflow: hidden; position: relative;
         }
 
+        /* HEADER */
         .app-header { 
             background: var(--primary-color); padding: 15px 20px; display: flex; align-items: center; 
             color: white; box-shadow: 0 2px 5px rgba(0,0,0,0.2); flex-shrink: 0; z-index: 20;
         }
         
         .btn-voltar { background: transparent; border: none; color: white; font-size: 24px; cursor: pointer; margin-right: 15px; display: none; }
-        .agente-info { display: flex; align-items: center; gap: 12px; flex: 1; }
-        .perfil-icon { font-size: 20px; background-color: rgba(255,255,255,0.2); color: white; width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
-        .info-texto { display: flex; flex-direction: column; }
+        .perfil-icon { font-size: 20px; background-color: rgba(255,255,255,0.2); width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; }
+        .info-texto { display: flex; flex-direction: column; flex: 1; }
         .agente-nome { font-weight: 500; font-size: 16px; }
         .registro-op { font-size: 12px; font-weight: 300; opacity: 0.8;}
 
+        /* CONTEÚDO E FUNDO */
         #tab-content {
-            flex: 1 1 auto; overflow-y: auto; position: relative;
+            flex: 1; overflow-y: auto; position: relative;
             background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); 
             background-size: cover; background-attachment: fixed;
         }
 
+        /* LISTA DE CHATS (HOME) */
         #tela-lista-chats { background: white; height: 100%; width: 100%; }
         .chat-item { display: flex; align-items: center; padding: 15px 20px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: 0.2s; }
         .chat-item:active { background-color: #f5f5f5; }
@@ -76,69 +66,130 @@
         .chat-titulo { font-weight: 500; font-size: 16px; color: #111; margin-bottom: 3px;}
         .chat-subtitulo { font-size: 13px; color: #667781; }
 
-        .tela-chat { display: none; padding: 0; }
+        /* TELAS DE CHAT */
+        .tela-chat { display: none; }
         .tela-chat.ativo { display: block; }
-        .tela-chat-content { padding: 20px; padding-bottom: 40px; } 
+        .tela-chat-content { padding: 15px; padding-bottom: 40px; } 
 
-        .barra-pesquisa-fixa {
-            position: sticky; top: 0; z-index: 15;
-            background: #ededed; padding: 10px 15px; border-bottom: 1px solid #ccc;
-            display: flex; gap: 8px; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-        .barra-pesquisa-fixa input { flex: 1; padding: 10px 15px; border-radius: 20px; border: none; background: white; font-size: 14px; margin: 0; }
-        .barra-pesquisa-fixa button { width: auto; padding: 10px 20px; border-radius: 20px; margin: 0; font-size: 13px; }
+       /* BARRA DE PESQUISA (Ajustada para ser maior e mais fácil de tocar) */
+.barra-pesquisa-fixa {
+    position: sticky; 
+    top: 0; 
+    z-index: 15;
+    background: #ededed; 
+    padding: 12px 15px; /* Aumentei o respiro vertical da barra */
+    border-bottom: 1px solid #ccc;
+    display: flex; 
+    gap: 10px; 
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
 
- 
+.barra-pesquisa-fixa input {
+    flex: 1; 
+    padding: 12px 18px; /* Aumentei o enchimento interno: o campo fica mais alto e largo */
+    border-radius: 25px; 
+    border: none; 
+    background: white; 
+    font-size: 15px; /* Texto levemente maior para leitura rápida */
+    margin: 0;
+    outline: none;
+}
 
-      /* 1. O Cartão de Vidro Fosco (Glassmorphism) */
+.barra-pesquisa-fixa button {
+    width: auto; 
+    padding: 10px 20px; 
+    border-radius: 20px; 
+    margin: 0; 
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+}
+        /* BOLHA GLASSMORPHISM */
         .bolha-msg {
-            background: rgba(255, 255, 255, 0.55); /* Mais transparente para a imagem de fundo aparecer */
-            backdrop-filter: blur(16px); /* O "embaçado" forte do vidro */
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.6); /* Bordinha branca fina imitando o reflexo do vidro */
-            border-radius: 20px; /* Bordas bem redondas como no seu print */
-            padding: 24px; 
+            background: rgba(255, 255, 255, 0.75); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 18px; 
+            padding: 20px; 
             margin-bottom: 20px;
-            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15); /* Sombra azulada e suave */
-            position: relative; 
-            max-width: 98%; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            max-width: 100%; 
+        }
+
+        .bolha-texto { font-size: 14px; color: #333; margin-bottom: 18px; font-weight: 500; }
+
+        /* FORMULÁRIOS E CAMPOS */
+        .campo-grupo { 
+            margin-bottom: 20px; /* Aumentado para dar respiro entre campos verticais */
+            width: 100%; 
         }
         
-        /* 2. Forçando a setinha do balão antigo a sumir de vez */
-        .bolha-msg::before {
-            display: none !important; 
+        .campo-row { 
+            display: flex; 
+            gap: 12px; 
+            margin-bottom: 20px; /* RESOLVE O PROBLEMA DE FICAR GRUDADO NO CÓDIGO DA OC */
+        }
+        
+        .campo-row .campo-grupo { margin-bottom: 0; }
+
+        label { 
+            display: block; 
+            margin-bottom: 6px; 
+            font-size: 11px; 
+            color: var(--text-secondary); 
+            font-weight: 700; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
-        /* 3. Ajuste fino: Deixando os campos dentro do vidro mais modernos */
-        .bolha-msg input, 
-        .bolha-msg select, 
-        .bolha-msg textarea {
-            background-color: rgba(255, 255, 255, 0.9);
-            border: 2px solid #e2e8f0; /* Borda um pouquinho mais grossa e clara */
-            border-radius: 12px; /* Campos mais arredondados */
-            font-weight: 500;
+        input, select, textarea { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid var(--border-color); 
+            border-radius: 10px; 
+            background-color: white; 
+            font-size: 14px; 
+            color: var(--text-primary);
+            transition: border 0.3s;
         }
+        
+        input:focus, select:focus { border-color: var(--primary-color); outline: none; }
 
-        .bolha-texto { font-size: 14px; color: #333; margin-bottom: 15px; line-height: 1.4; }
-
-        .campo-grupo { margin-bottom: 15px; width: 100%; }
-        .campo-row { display: flex; gap: 15px; }
-        .campo-row .campo-grupo { flex: 1; margin-bottom: 0;}
-        label { display: block; margin-bottom: 8px; font-size: 12px; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px;}
-
-        input, select, textarea { width: 100%; padding: 12px 15px; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--field-background); font-size: 15px; color: var(--text-primary); }
-
-        .btn-acao { width: 100%; padding: 14px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; border: none; display: flex; justify-content: center; align-items: center;}
+        /* BOTÕES */
+        .btn-acao { 
+            width: 100%; 
+            padding: 14px; 
+            border-radius: 10px; 
+            font-size: 14px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            border: none; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center;
+            transition: transform 0.1s active;
+        }
         .btn-primario { background-color: var(--primary-color); color: white; }
-        .btn-secundario { background-color: #cbd5e1; color: #334155; }
-        .btn-alerta { background-color: #dc3545; color: white; }
+        .btn-secundario { background-color: #e2e8f0; color: #475569; }
+        .btn-alerta { background-color: #ef4444; color: white; }
 
-        .status-box { background: var(--gradiente-azul); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px; color: white;}
-        .status-box h3 { margin-bottom: 10px; font-size: 16px; font-weight: bold;}
-        .status-box p { font-size: 14px; margin-bottom: 5px; opacity: 0.9;}
+        /* BOX DE STATUS (OCORRÊNCIA ATIVA) */
+        .status-box { 
+            background: var(--gradiente-azul); 
+            border-radius: 15px; 
+            padding: 18px; 
+            margin-bottom: 15px; 
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        .status-box h3 { font-size: 15px; margin-bottom: 8px; text-transform: uppercase; }
+        .status-box p { font-size: 13px; margin-bottom: 4px; opacity: 0.9; }
 
+        /* UTILITÁRIOS */
         .escondido { display: none !important; }
-        .mt-2 { margin-top: 10px; }
+        .mt-2 { margin-top: 8px; }
     </style>
 
 </head>
@@ -164,16 +215,18 @@
         <div class="app-card">
             
             <div class="app-header">
-                <button class="btn-voltar" id="btn-voltar-home" onclick="voltarParaHome()">←</button>
-                <div class="agente-info">
-                    <span class="perfil-icon">👤</span>
-                    <div class="info-texto">
-                        <span class="agente-nome" id="header-titulo">Agente Trânsito</span>
-                        <span class="registro-op" id="header-sub">SISTEMA OPERACIONAL</span>
-                    </div>
-                </div>
-                <button onclick="fazerLogout()" style="background:rgba(255,255,255,0.2); color: white; border: none; padding: 6px 10px; border-radius: 4px; font-weight: bold; cursor: pointer;">SAIR</button>
-            </div>
+    <button id="btn-voltar-home" class="btn-voltar" onclick="voltarParaHome()">←</button>
+    
+    <div class="agente-info">
+        <div class="perfil-icon">👤</div>
+        <div class="info-texto">
+            <span id="nome-agente-header" class="agente-nome">AGENTE</span>
+            <span id="header-sub" class="registro-op">SISTEMA OPERACIONAL</span>
+        </div>
+    </div>
+
+    <button class="btn-sair-header" onclick="fazerLogout()">SAIR</button>
+</div>
 
             <div id="tab-content">
                 
@@ -217,7 +270,7 @@
                         <div id="caixa-hist-km" style="margin-bottom: 20px;"></div>
 
                         <div class="bolha-msg">
-                            <div class="bolha-texto"><b>Sistema:</b> Preencha os dados para iniciar a viatura.</div>
+                            
                             <div id="tela-abrir-km">
                                 <form id="formKM">
                                     <div class="campo-grupo">
@@ -257,7 +310,7 @@
                                 <p id="info-hora-ativa" style="font-weight: bold; margin-top: 5px;"></p>
                             </div>
                             <div class="bolha-msg">
-                                <div class="bolha-texto"><b>Sistema:</b> Para finalizar, informe os dados de fechamento:</div>
+    
                                 <form id="formFecharKM">
                                     <div class="campo-row">
                                         <div class="campo-grupo"><label>KM FINAL</label><input type="number" id="km-final" required></div>
@@ -287,9 +340,9 @@
                         <div id="caixa-hist-oc" style="margin-bottom: 20px;"></div>
 
                         <div id="tela-oc-ativas" class="escondido" style="margin-bottom: 20px;">
-                            <div id="lista-ocorrencias-ativas"></div>
-                            <button type="button" class="btn-acao btn-secundario" style="margin-top: 10px;" onclick="prepararNovaOcorrencia()">+ REGISTRAR NOVA OCORRÊNCIA</button>
-                        </div>
+    <div id="lista-ocorrencias-ativas"></div>
+    <button id="btn-registrar-oc" type="button" class="btn-acao btn-secundario" style="margin-top: 10px;" onclick="prepararNovaOcorrencia()">+ REGISTRAR NOVA OCORRÊNCIA</button>
+</div>
 
                         <div id="tela-oc-form" class="bolha-msg">
                             <div class="bolha-texto"><b>Sistema:</b> Descreva a nova ocorrência abaixo:</div>
